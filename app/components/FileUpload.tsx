@@ -1,40 +1,38 @@
 "use client";
-import React, { useState } from "react";
+import { useState } from "react";
 import { IKUpload } from "imagekitio-next";
 import { Loader2 } from "lucide-react";
 import { IKUploadResponse } from "imagekitio-next/dist/types/components/IKUpload/props";
 
 interface FileUploadProps {
     onSuccess: (res: IKUploadResponse) => void;
-    onProgess?: (progress: number) => void;
+    onProgress?: (progress: number) => void;
     fileType?: "image" | "video";
 }
 
 export default function FileUpload({
     onSuccess,
-    onProgess,
+    onProgress,
     fileType = "image"
 }: FileUploadProps) {
     const [uploading, setUploading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     
   const onError = (err: {message: string}) => {
-    console.log("Error", err);
     setError(err.message);
     setUploading(false);
   };
   
   const handleSuccess = (response: IKUploadResponse) => {
-    console.log("Success", response);
     setUploading(false);
     setError(null);
     onSuccess(response);
   };
   
   const handleProgress = (evt: ProgressEvent) => {
-    if(evt.lengthComputable && onProgess){
+    if(evt.lengthComputable && onProgress){
         const percentComplete = (evt.loaded / evt.total) * 100;
-        onProgess(Math.round(percentComplete));
+        onProgress(Math.round(percentComplete));
     }
   };
   
@@ -54,7 +52,7 @@ export default function FileUpload({
             return false;
         }
     }else {
-        const validTypes = ["image/jpeg", "image/png", "image/gif"];
+        const validTypes = ["image/jpeg", "image/png", "image/webp"];
         if(!validTypes.includes(file.type)){
             setError("Please upload a valid image file");
             return false;

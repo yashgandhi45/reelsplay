@@ -12,14 +12,20 @@ export async function dbConnect(){
     if(cached.conn){
         return cached.conn;
     }
-    if(!cached.promise){
-    cached.promise = mongoose.connect(MONGODB_URI).then(()=>mongoose.connection);
+    if (!cached.promise) {
+        const opts = {
+          bufferCommands: true,
+          maxPoolSize: 10,
+        };
+        cached.promise = mongoose
+        .connect(MONGODB_URI, opts)
+        .then(() => mongoose.connection);
     }
     try{
         cached.conn = await cached.promise;
-    }catch{
+    }catch(e){
         cached.promise = null;
-        throw new Error("MongoDB connection failed");
+        throw e;
     }
     return cached.conn;
 }
